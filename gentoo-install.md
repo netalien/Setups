@@ -86,7 +86,7 @@ ln -sf /usr/share/zoneinfo/America/Caracas /etc/localtime
 
 ### Configure make.conf
 
-  CFLAGS="-march=native -O2 -fpredictive-commoning -fexcess-precision=fast -mfpmath=sse -pipe"
+> CFLAGS="-march=native -O2 -fpredictive-commoning -fexcess-precision=fast -mfpmath=sse -pipe"
   CXXFLAGS="${CFLAGS}"                                                            
   LDFLAGS="-Wl,-O1 -Wl,--as-needed -Wl,--hash-style=both -Wl,-z,now"              
   CHOST="x86_64-pc-linux-gnu"                                                     

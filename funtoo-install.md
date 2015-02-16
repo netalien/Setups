@@ -78,7 +78,7 @@ ln -sf /usr/share/zoneinfo/America/Caracas /etc/localtime
 
 ### Configure make.conf
 
-  CFLAGS="-march=core2 -O2 -pipe"
+> CFLAGS="-march=core2 -O2 -pipe"
   CXXFLAGS="-march=core2 -O2 -pipe"
   MAKEOPTS="-j3"
 
