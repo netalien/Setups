@@ -70,11 +70,11 @@ export PS1="(chroot) $PS1"
 
 ### fstab
 
-> /dev/sda3               /boot           ext4            nodiratime      1 2
-  /dev/sda5               none            swap            sw              0 0
-  # xfs 
-  /dev/sda6               /               xfs             nodiratime      0 1
-  # btrfs
+> /dev/sda3               /boot           ext4            nodiratime      1 2  
+  /dev/sda5               none            swap            sw              0 0  
+  # xfs   
+  /dev/sda6               /               xfs             nodiratime      0 1  
+  # btrfs  
   /dev/sda6		/		btrfs defaults,noatime,compress=lzo,autodefrag,subvol=root	0 0
 
 
@@ -86,28 +86,24 @@ ln -sf /usr/share/zoneinfo/America/Caracas /etc/localtime
 
 ### Configure make.conf
 
-> CFLAGS="-march=native -O2 -fpredictive-commoning -fexcess-precision=fast -mfpmath=sse -pipe"
-  CXXFLAGS="${CFLAGS}"                                                            
-  LDFLAGS="-Wl,-O1 -Wl,--as-needed -Wl,--hash-style=both -Wl,-z,now"              
-  CHOST="x86_64-pc-linux-gnu"                                                     
-  MAKEOPTS="-j2"                                                    
-                           
-  # accepts                  
-  ACCEPT_KEYWORDS=""
-  ACCEPT_LICENSE="*"
-
-  # USEs
-  USE="bash-completion bindist -bluetooth ccache -gdbm -gtk3 -handbook -introspection \
-    -ipv6 kde -ldap lzma lzo mmx pch python -spell sse sse2 sse3 ssse3 vim-syntax \
-    xattr -zeroconf"
-                  
-  # emerge opts                  
-  EMERGE_DEFAULT_OPTS="--verbose"
-                               
-  # hardware opts           
-  LINGUAS="en en_US en_EN"            
-  VIDEO_CARDS="radeon fglrx"          
-  INPUT_DEVICES="mouse keyboard evdev"
+> CFLAGS="-march=native -O2 -fpredictive-commoning -fexcess-precision=fast -mfpmath=sse -pipe"  
+  CXXFLAGS="${CFLAGS}"  
+  LDFLAGS="-Wl,-O1 -Wl,--as-needed -Wl,--hash-style=both -Wl,-z,now"  
+  CHOST="x86_64-pc-linux-gnu"  
+  MAKEOPTS="-j2"  
+  # accepts  
+  ACCEPT_KEYWORDS=""  
+  ACCEPT_LICENSE="*"  
+  # USEs  
+  USE="bash-completion bindist -bluetooth ccache -gdbm -gtk3 -handbook -introspection \  
+    -ipv6 kde -ldap lzma lzo mmx pch python -spell sse sse2 sse3 ssse3 vim-syntax \  
+    xattr -zeroconf"  
+  # emerge opts  
+  EMERGE_DEFAULT_OPTS="--verbose"  
+  # hardware opts  
+  LINGUAS="en en_US en_EN"  
+  VIDEO_CARDS="radeon fglrx"  
+  INPUT_DEVICES="mouse keyboard evdev"  
 
 
 ### hostname

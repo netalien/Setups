@@ -63,11 +63,11 @@ emerge --sync
 
 ### fstab
 
-> /dev/sda3               /boot           ext4            nodiratime      1 2
-  /dev/sda5               none            swap            sw              0 0
-  # For xfs 
-  /dev/sda6               /               xfs             nodiratime      0 1
-  # For btrfs
+> /dev/sda3               /boot           ext4            nodiratime      1 2  
+  /dev/sda5               none            swap            sw              0 0  
+  # For xfs  
+  /dev/sda6               /               xfs             nodiratime      0 1  
+  # For btrfs  
   /dev/sda6		/		btrfs defaults,noatime,compress=lzo,autodefrag,subvol=root	0 0
 
 
@@ -78,19 +78,16 @@ ln -sf /usr/share/zoneinfo/America/Caracas /etc/localtime
 
 ### Configure make.conf
 
-> CFLAGS="-march=core2 -O2 -pipe"
-  CXXFLAGS="-march=core2 -O2 -pipe"
-  MAKEOPTS="-j3"
-
-  # accepts
-  ACCEPT_LICENSE="*"
-
-  # emerge opts
-  EMERGE_DEFAULT_OPTS="--verbose"
-
-  # hardware opts
-  VIDEO_CARDS="radeon"
-  INPUT_DEVICES="mouse keyboard evdev"
+> CFLAGS="-march=core2 -O2 -pipe"  
+  CXXFLAGS="-march=core2 -O2 -pipe"  
+  MAKEOPTS="-j3"  
+  # accepts  
+  ACCEPT_LICENSE="*"  
+  # emerge opts  
+  EMERGE_DEFAULT_OPTS="--verbose"  
+  # hardware opts  
+  VIDEO_CARDS="radeon"  
+  INPUT_DEVICES="mouse keyboard evdev"  
 
 
 ### Set up hostname
