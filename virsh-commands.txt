@@ -1,0 +1,13 @@
+virsh capabilities
+virsh net-list [--all]
+virsh net-define somexml.xml
+virsh net-autostart somenet
+virsh pool-create-as --name kvm_isos --type dir --target /media/data00/ISOs
+[--printxml]
+virsh pool-dumpxml somepool > somexml.xml # this is needed since the pool
+                                          # is "transient" (that's how all
+                                          # 'create' commands work), meaning it will be deleted after libvirt daemon stops
+virsh pool-define somexml.xml
+virsh cpu-models x86_64[|someotherarch]
+virt-install --os-variant list
+virt-install --connect qemu:///system --name=test --ram=768 --vcpus=1 --arch=x86_64 --os-type=linux --os-variant=rhel6 --virt-type=kvm --hvm --accelerate --network=network=public --cdrom=/media/data00/ISOs/CentOS-6.5-x86_64-bin-DVD1.iso --disk=pool=kvm_disks,bus=virtio,format=qcow2,size=20 --graphics=spice --video=qxl --channel=spicevmc --boot=cdrom

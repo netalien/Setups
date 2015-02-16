@@ -1,0 +1,6 @@
+polkit.addRule(function(action, subject) {
+	if (action.id == "org.libvirt.unix.manage" &&
+	subject.user == "netalien") {
+		return polkit.Result.YES;
+	}
+});

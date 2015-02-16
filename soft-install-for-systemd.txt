@@ -1,0 +1,17 @@
+# Transition from openrc to systemd on Gentoo
+
+ln -sf /proc/self/mounts /etc/mtab
+eselect profile set 7 # kde profile with systemd
+
+- Added to make.conf: 
+-consolekit systemd
+
+USE="-systemd" emerge sys-apps/dbus # this is temporary,don't set on
+package.use
+
+emerge -puDN @world
+
+Add GRUB_CMDLINE_LINUX="init=/usr/lib/systemd/systemd" to default/grub
+grub2-mkconfig -o /boot/grub/grub.cfg
+
+systemctl enable dhcpcd
