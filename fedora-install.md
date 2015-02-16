@@ -2,22 +2,22 @@ Fedora Install
 ==============
 
 
-# Eliminar el daemon automatico que busca los updates
+### Eliminar el daemon automatico que busca los updates
 ```sh
 killall -9 packagekitd
 ```
 
-# No requerir el refresh de packagekit
+### No requerir el refresh de packagekit
 ```sh
 sed -i '2s/1/0/g' /etc/yum/pluginconf.d/refresh-packagekit.conf
 ```
 
-# Activar nested kvm virt
+### Activar nested kvm virt
 ```sh
 echo 'options kvm-intel nested=1' > /etc/modprobe.d/kvm_intel_nested.conf
 ```
 
-# deshabilitar ipv6, en Network Manager, tab ipv6 seleccionar Ignore
+### deshabilitar ipv6, en Network Manager, tab ipv6 seleccionar Ignore
 ```sh
 cat > /etc/sysctl.d/ipv6.conf << _EOF
 net.ipv6.conf.all.disable_ipv6=1
@@ -29,20 +29,20 @@ sysctl -p /etc/sysctl.d/ipv6.conf
 sed -i '2s/^/#/g' /etc/hosts
 ```
 
-# Optimizar swappiness
+### Optimizar swappiness
 ```sh
 echo 'vm.swappiness = 20' > /etc/sysctl.d/swappiness.conf
 sysctl -p /etc/sysctl.d/swappiness.conf
 ```
 
-# Optimizar cache de disco
+### Optimizar cache de disco
 ```
 echo 'vm.dirty_ratio = 10' > /etc/sysctl.d/diskcache.conf
 echo 'vm.dirty_background_ratio = 3' >> /etc/sysctl.d/diskcache.conf
 sysctl -p /etc/sysctl.d/diskcache.conf
 ```
 
-# Configurar red
+### Configurar red
 
 + Usando NetworkManager
 
@@ -118,42 +118,42 @@ systemctl disable NetworkManager && chkconfig network on
 systemctl stop NetworkManager && service network start
 ```
 
-# Update
+### Update
 ```sh
 yum -y distro-sync
 ```
 
-# Instalar rpmfusion
+### Instalar rpmfusion
 ```sh
 yum -y localinstall --nogpgcheck http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
 ```
 
-# instalar paquetes varios
+### instalar paquetes varios
 ```sh
 yum -y install htop iotop nethogs iptraf-ng wireshark vim-enhanced vim-X11 dstat sysstat nmap glances sysstat netmonitor atop arpwatch fspy ibmonitor iputils swatch sysusage checkdns iftop latencytop nload procps-ng psacct tcpdump bind-utils terminator pgadmin3 remmina-plugins-vnc remmina-plugins-rdp rdiff-backup pavucontrol ntop p7zip p7zip-plugins unrar fio collectl nmon mtr ffmpegthumbs git thunderbird
 ```
 
-# Instalar vlc y moc
+### Instalar vlc y moc
 ```sh
 yum -y install vlc moc
 ```
 
-# livirt y demas
+### livirt y demas
 ```sh
 yum -y groupinstall @virtualization; yum -y install libguestfs-tools virt-top ksm
 ```
 
-# Activar ksm
+### Activar ksm
 ```sh
 for s in ksm ksmtuned; do systemctl enable $s && systemctl start $s; done
 ```
 
-# Activar libvirtd
+### Activar libvirtd
 ```sh
 systemctl start libvirtd
 ```
 
-# Archivos de configuracion de polkit
+### Archivos de configuracion de polkit
 ```sh
 cp /media/data02/Linux/ConfigFiles/polkit/*.rules /etc/polkit-1/rules.d/
 restorecon -vv /etc/polkit-1/rules.d/*.rules
@@ -163,7 +163,7 @@ chmod 644 /etc/polkit-1/rules.d/19-udisk2-mount.rules
 chmod 644 /etc/polkit-1/rules.d/20-libvirt.rules 
 ```
 
-# Copiar custom bash y vimrc
+### Copiar custom bash y vimrc
 ```sh
 \cp /media/data02/Linux/ConfigFiles/Bash/bashrc_fedora /etc/bashrc
 restorecon -vv /etc/bashrc
@@ -174,28 +174,28 @@ restorecon -vv /usr/share/vim/vim74/colors/skittles_dark.vim
 chmod 644 /usr/share/vim/vim74/colors/skittles_dark.vim
 ```
 
-# Optimizar grub
+### Optimizar grub
 
 Eliminar rhgb quiet y agregar al final de la linea del kernel en /etc/default/grub
 
   plymouth.enable=0 selinux=0
 
-# Desactivar selinux en config
+### Desactivar selinux en config
 ```sh
 sed -i '7s/enforcing/disabled/g' /etc/selinux/config
 ```
 
-# Desactivar servicios varios
+### Desactivar servicios varios
 ```sh
 for s in fedora-configure fedora-loadmodules fedora-readonly avahi-daemon.service avahi-daemon.socket bluetooth fprintd livesys-late livesys ModemManager nfs-lock rngd iscsid.socket iscsiuio.socket dmraid-activation iscsi mdmonitor multipathd vmtoolsd dm-event proc-fs-nfsd.mount var-lib-nfs-rpc_pipefs.mount rpcbind; do systemctl disable $s && systemctl mask $s; done
 ```
 
-# Reconfigurar grub menu
+### Reconfigurar grub menu
 ```sh
 grub2-mkconfig -o /boot/grub2/grub.cfg
 ```
 
-# Java config
+### Java config
 
 Luego de la instalacion del JDK de Oracle (rpm)
 ```sh

@@ -1,7 +1,7 @@
 Funtoo Install
 ==============
 
-# Disk partitions
+### Disk partitions
 ```sh
 mkfs.ext4 /dev/sda3
 ```
@@ -33,19 +33,19 @@ mkdir /mnt/funtoo/boot
 mount /dev/sda3 /mnt/funtoo/boot
 ```
 
-# Fix date
+### Fix date
 ```sh
 date MMDDhhmmYYYY
 ```
 
-# Install stage3
+### Install stage3
 ```sh
 cd /tmp && wget -c http://build.funtoo.org/funtoo-current/x86-64bit/core2_64/stage3-latest.tar.xz
 
 cd /mnt/funtoo && tar xpf /tmp/stage3-*.tar.xz
 ```
 
-# chroot
+### chroot
 ```sh
 cd /mnt/funtoo
 mount -t proc none proc
@@ -56,12 +56,12 @@ env -i HOME=/root TERM=$TERM chroot . bash -l
 export PS1="(chroot) $PS1"
 ```
 
-# Download portage tree
+### Download portage tree
 ```sh
 emerge --sync
 ```
 
-# fstab
+### fstab
 
   /dev/sda3               /boot           ext4            nodiratime      1 2
   /dev/sda5               none            swap            sw              0 0
@@ -70,12 +70,12 @@ emerge --sync
   # For btrfs
   /dev/sda6		/		btrfs defaults,noatime,compress=lzo,autodefrag,subvol=root	0 0
 
-# timezone
+### timezone
 ```sh
 ln -sf /usr/share/zoneinfo/America/Caracas /etc/localtime
 ```
 
-# Configure make.conf
+### Configure make.conf
 
   CFLAGS="-march=core2 -O2 -pipe"
   CXXFLAGS="-march=core2 -O2 -pipe"
@@ -92,39 +92,39 @@ ln -sf /usr/share/zoneinfo/America/Caracas /etc/localtime
   INPUT_DEVICES="mouse keyboard evdev"
 
 
-# Set up hostname
+### Set up hostname
 ```sh
 sed -i '2s/localhost/funtoo.normandy.lab/g' /etc/conf.d/hostname
 ```
 
-# keymap
+### keymap
 ```sh
 sed -i '3s/us/es/g' /etc/conf.d/keymaps
 ```
 
-# clock
+### clock
 ```sh
 sed -i '5s/UTC/local/g' /etc/conf.d/hwclock
 ```
 
-# set desktop flavor and X add-in
+### set desktop flavor and X add-in
 ```sh
 eselect profile set-flavor 8
 eselect profile add 34
 ```
 
-# Update currently installed packages
+### Update currently installed packages
 ```sh
 emerge -auDN @world
 ```
 
-# Create package set for kernel
+### Create package set for kernel
 ```sh
 mkdir /etc/portage/sets
 echo sys-kernel/gentoo-sources > /etc/portage/sets/kernel
 ```
 
-# kernel install
+### kernel install
 ```sh
 emerge -1 @kernel
 cd /usr/src/linux
@@ -135,12 +135,12 @@ cp arch/x86_64/boot/bzImage /boot/kernel-3.18.1-funtoo
 cp System.map /boot/System.map-3.18.1-funtoo
 ```
 
-# grub
+### grub
 ```sh
 emerge boot-update os-prober
 ```
 
-# Edit /etc/boot.conf
+### Edit /etc/boot.conf
 
   # with btrfs
   boot {
@@ -178,13 +178,13 @@ emerge boot-update os-prober
       params root=/dev/sda1
   }
 
-# generate grub2 confs
+### generate grub2 confs
 ```sh
 grub-install --no-floppy /dev/sda
 boot-update
 ```
 
-# Network configuration
+### Network configuration
 ```sh
 emerge -av bridge-utils usermode-utilities
 
@@ -215,12 +215,12 @@ forwarding=1
 _EOF
 ```
 
-# swap optimization
+### swap optimization
 ```sh
 echo 'vm.swappiness = 4' > /etc/sysctl.d/swappiness.conf
 ```
 
-# install vim
+### install vim
 ```sh
 emerge vim 
 ```
@@ -237,18 +237,18 @@ cp /media/data02/Linux/skittles_dark.vim /usr/share/vim/vim74/colors/
 chmod 644 /usr/share/vim/vim74/colors/skittles_dark.vim
 ```
 
-# Install basic stuff
+### Install basic stuff
 ```sh
 emerge tmux htop sudo eix gentoolkit portage-utils irssi glances ntfs3g
 ```
 
-# User configuration
+### User configuration
 ```sh
 useradd -m -s /bin/bash -g users -G wheel,audio,cdrom,video,cdrw,usb netalien
 passwd netalien
 ```
 
-# X11 stuff
+### X11 stuff
 ```sh
 echo "x11-libs/cairo xcb" > /etc/portage/package.use
 echo "app-editors/gvim gtk" >> /etc/portage/package.use
@@ -261,30 +261,30 @@ emerge -p firefox-bin thunderbird-bin pgadmin3 google-chrome \
           logrotate lvm2 strace 
 ```
 
-# lvm
+### lvm
 ```sh
 rc-update add lvm default
 ```
 
-# logs
+### logs
 ```sh
 rc-update add rsyslog default
 ```
 
-# fcron
+### fcron
 ```sh
 emerge fcron
 emerge --config sys-process/fcron
 rc-update add fcron default
 ```
 
-# remmina
+### remmina
 ```sh
 echo 'net-misc/remmina freerdp ssh' >> /etc/portage/package.use
 emerge remmina
 ```
 
-# utilities
+### utilities
 ```sh
 echo 'net-analyzer/nmap ncat ndiff nmap-update nping' >> /etc/portage/package.use
 echo 'media-libs/gd fontconfig' >> /etc/portage/package.use
@@ -296,7 +296,7 @@ emerge -puN iotop atop htop dstat glances mtr nethogs iptraf-ng nmap \
 	acct tcpdump bind-tools p7zip fio nmon lsof
 ```
 
-# openpvn
+### openpvn
 ```sh
 echo 'net-misc/openvpn down-root iproute2 pkcs11' >> /etc/portage/package.use
 
@@ -313,17 +313,17 @@ ln -s openvpn openvpn.one
 ln -s openvpn openvpn.two
 ```
 
-# qemu/kvm libvirt nested virtualization
+### qemu/kvm libvirt nested virtualization
 ```sh
 echo 'options kvm-intel nested=1' > /etc/modprobe.d/kvm_intel_nested.conf
 ```
 
-# default uri
+### default uri
 ```sh
 sudo sh -c 'echo export LIBVIRT_DEFAULT_URI="qemu:///system" >> /etc/profile.d/libvirt-uri.sh'
 ```
 
-# USEs configuration and install
+### USEs configuration and install
 ```sh
 euse -E policykit
 
@@ -353,19 +353,19 @@ cp /media/data02/Linux/ConfigFiles/polkit/20-libvirt.rules /etc/polkit-1/rules.d
 chmod 644 /etc/polkit-1/rules.d/20-libvirt.rules
 ```
 
-# moc
+### moc
 ```sh
 echo 'media-sound/moc musepack' >> /etc/portage/package.use
 emerge moc
 ```
 
-# vlc
+### vlc
 ```sh
 echo 'media-video/vlc musepack vaapi' >> /etc/portage/package.use
 emerge vlc
 ```
 
-# fontconfig
+### fontconfig
 ```sh
 euse -E infinality
 
@@ -380,7 +380,7 @@ eselect infinality set infinality
 eselect lcdfilter set infinality
 ```
 
-# Themes for gtk
+### Themes for gtk
 
 lxappearance is used to set the themes
 ```sh
@@ -389,21 +389,21 @@ tar xf MediterraneanNight-*.tar.gz
 mkdir ~netalien/.themes
 ```
 
-# For wallpaper change
+### For wallpaper change
 
 This is set in a cron every one hour
 ```sh
 feh --bg-scale -z /media/data01/Images
 ```
 
-# File manager
+### File manager
 ```sh
 echo 'gnome-base/gvfs fuse udisks' >> /etc/portage/package.use 
 echo 'xfce-base/thunar fuse udisks' >> /etc/portage/package.use
 emerge thunar
 ```
 
-# Extra config for i3
+### Extra config for i3
 
 This is done because the default terminal app is terminator which set WM_CLASS to *x-terminal-emulator* no matter the console app running within it
 ```sh
@@ -433,7 +433,7 @@ sudo chmod +x /usr/bin/thtop
 ```sh
 
 
-# For mtp (s4)
+### For mtp (s4)
 ```sh
 gpasswd -a netalien plugdev
 
@@ -448,7 +448,7 @@ mkdir ~/Android
 simple-mtpfs ~/Android
 ```
 
-# For kde...
+### For kde...
 ```sh
 echo 'dev-qt/qtgui gtkstyle' >> /etc/portage/package.use
 echo 'dev-python/PyQt4 webkit declarative sql script' >> /etc/portage/package.use
@@ -461,7 +461,7 @@ sed -i '10s/xdm/kdm/g' /etc/conf.d/xdm
 rc-update add xdm default
 ```
 
-# overlays
+### overlays
 ```sh
 echo 'dev-vcs/subversion' >> /etc/portage/package.keywords
 echo 'app-portage/layman subversion' >> /etc/portage/package.use

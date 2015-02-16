@@ -1,7 +1,7 @@
 Debian 8.0 (testing) 
 ====================
 
-# NetworkManager GTFO
+### NetworkManager GTFO
 
 Install bridge utils
 ```sh
@@ -42,7 +42,7 @@ Restart networking
 systemctl stop networking && ip addr flush eth0 && systemctl start networking
 ```
 
-# Set sources.list
+### Set sources.list
 
 Add *contrib non-free* to all ports and deactivate deb cdrom repo
 
@@ -51,7 +51,7 @@ Update repos and system
 apt-get update && apt-get upgrade
 ```
 
-# Bash customization
+### Bash customization
 
 Add at the bottom of /etc/bash.bashrc:
 
@@ -81,13 +81,13 @@ Add at the bottom of /etc/bash.bashrc:
   export HISTTIMEFORMAT="%d %b | %k:%M -> "
 
 
-# Important packages
+### Important packages
 
 ```sh
 apt-get install vim vim-syntax-docker vim-syntax-go vim-haproxy vim-puppet vim-gnome vim-scripts vim-addon-manager vim-syntastic vim-tlib vim-doc wajig debtags apt-move apt-file deborphan apt-show-versions debsums debconf-utils cscope exuberant-ctags htop iotop sysstat nethogs iptraf-ng wireshark nmap mtr bind9utils remmina remmina-plugin-vnc remmina-plugin-rdp terminator pgadmin3 tcpdump p7zip-full p7zip-rar fio git subversion pavucontrol sudo strace ltrace golang-go debian-keyring openvpn resolvconf icedove glances numlockx irssi firmware-linux-nonfree
 ```
 
-# libvirt and friends
+### libvirt and friends
 
 ```sh
 wajig install libvirt-bin qemu-kvm virt-manager libguestfs-tools
@@ -99,7 +99,7 @@ gpasswd -a netalien libvirt
 gpasswd -a netalien kvm
 ```
 
-# vlc and moc
+### vlc and moc
 
 ```sh
 wajig install vlc moc moc-ffmpeg-plugin
@@ -111,13 +111,13 @@ mkdir .moc
 cp /media/data02/Linux/ConfigFiles/Moc/config .moc/config && chmod 644 .moc/config
 ```
 
-# nested kvm
+### nested kvm
 
 ```sh
 echo 'options kvm-intel nested=1' > /etc/modprobe.d/99-intel-nestedvirt.conf
 ```
 
-# vim modifications
+### vim modifications
 
 set nocompatible        " Use Vim defaults (much better!)
 set bs=2                " Allow backspacing over everything in insert mode
@@ -147,7 +147,7 @@ cp /media/data02/Linux/skittles_dark.vim /usr/share/vim/vim74/colors/
 chmod 644 /usr/share/vim/vim74/colors/skittles_dark.vim
 ```
 
-# i3 setup
+### i3 setup
 
 Install i3
 ```sh
@@ -171,7 +171,7 @@ Set nautilus to sort folders first
 gsettings set org.gnome.nautilus.preferences sort-directories-first true
 ```
 
-# Unneeded services
+### Unneeded services
 
 ```sh
 systemctl disable ModemManager exim4 pppd-dns glances speech-dispatcher avahi-daemon mdadm-raid packagekit lvm2-activation-early saned lvm2-activation lvm2-monitor

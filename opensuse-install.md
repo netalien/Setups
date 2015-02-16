@@ -1,35 +1,35 @@
 OpenSUSE
 ========
 
-# update
+### update
 ```sh
 zypper dup
 ```
 
-# nested kvm
+### nested kvm
 ```sh
 echo 'options kvm-intel nested=1' > /etc/modprobe.d/99-intel-nestedvirt.conf
 ```
 
-# better swapiness
+### better swapiness
 ```sh
 echo 'vm.swappiness = 20' > /etc/sysctl.d/swappiness.conf
 sysctl -p /etc/sysctl.d/swappiness.conf
 ```
 
-# better disk cache
+### better disk cache
 ```sh
 echo 'vm.dirty_ratio = 10' > /etc/sysctl.d/diskcache.conf
 echo 'vm.dirty_background_ratio = 3' >> /etc/sysctl.d/diskcache.conf
 sysctl -p /etc/sysctl.d/diskcache.conf
 ```sh
 
-# packman repo
+### packman repo
 ```sh
 zypper ar -f -n packman http://packman.inode.at/suse/openSUSE_Tumbleweed/ packman
 ```
 
-# Important packages
+### Important packages
 ```sh
 zypper in htop iotop nethogs iptraf-ng wireshark vim-data vim-plugin-colorschemes \
 	go-vim gvim sysstat sysstat-isag nmap nping ncat arpwatch iputils latencytop \
@@ -38,39 +38,39 @@ zypper in htop iotop nethogs iptraf-ng wireshark vim-data vim-plugin-colorscheme
 	okular ffmpegthumbnailer kffmpegthumbnailer gtk3-engine-oxygen gtk3-theme-oxygen
 ```
 
-# vlc
+### vlc
 ```sh
 zypper in vlc vlc-codecs
 ```
 
-# Virtualization newest repo
+### Virtualization newest repo
 ```sh
 zypper ar -f -n virtualization http://download.opensuse.org/repositories/Virtualization/openSUSE_Factory/ virtualization
 ```
 
-# KVM
+### KVM
 
 Install kvm and tools from yast, additionally install:
 ```sh
 zypper in guestfs-tools virt-utils virt-v2v
 ```
 
-# Activate libvirt
+### Activate libvirt
 ```sh
 systemctl enable libvirtd ksm
 ```
 
-# Polkit config
+### Polkit config
 ```sh
 cp /media/data02/Linux/ConfigFiles/polkit/*.rules /etc/polkit-1/rules.d/
 chmod 644 /etc/polkit-1/rules.d/19-udisk2-mount.rules 
 chmod 644 /etc/polkit-1/rules.d/20-libvirt.rules 
 ```
 
-# bash customizations
+### bash customizations
 ```sh
 cat > /etc/bash.bashrc.local <<_EOF
-# Aliases
+### Aliases
 
 alias ll='ls -lh --color=auto'
 alias la='ls -lhA --color=auto'
@@ -86,11 +86,11 @@ alias mkdir='mkdir -v'
 alias rmdir='rmdir -v'
 alias ln='ln -v'
 
-# Configs
+### Configs
 shopt -s histappend
 history -a
 
-# Exports
+### Exports
 export EDITOR='/usr/bin/vim'
 export HISTSIZE=2000
 export HISTFILESIZE=$HISTSIZE
@@ -98,7 +98,7 @@ export HISTTIMEFORMAT="%d %b | %k:%M -> "
 _EOF
 ```
 
-# Config vim
+### Config vim
 ```sh
 cp /media/data02/Linux/skittles_dark.vim /usr/share/vim/current/colors/
 chmod 644 /usr/share/vim/vim74/colors/skittles_dark.vim

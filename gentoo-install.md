@@ -2,7 +2,7 @@ Gentoo Install
 ==============
 
 
-# Partitions
+### Partitions
 ```sh
 mkfs.ext4 /dev/sda3
 ```
@@ -28,7 +28,7 @@ Swap setup
 mkswap /dev/sda5 && swapon /dev/sda5
 ```
 
-# Mount all
+### Mount all
 ```sh
 mkdir /mnt/gentoo
 mount /dev/sda5 /mnt/gentoo
@@ -36,28 +36,28 @@ mkdir /mnt/gentoo/boot
 mount /dev/sda3 /mnt/gentoo/boot
 ```
 
-# Fix date
+### Fix date
 ```sh
 date MMDDhhmmYYYY
 ```
 
-# Get files
+### Get files
 ```sh
 cd /tmp && wget -c http://www.gtlib.gatech.edu/pub/gentoo/releases/amd64/autobuilds/current-stage3-amd64/stage3-amd64-20140619.tar.bz2
 wget -c http://www.gtlib.gatech.edu/pub/gentoo/snapshots/portage-latest.tar.xz
 ```
 
-# install stage3
+### install stage3
 ```sh
 cd /mnt/gentoo && tar xjpf /mnt/data/Linux/stage3-*.tar.bz2 
 ```
 
-# install portage
+### install portage
 ```sh
 cd /mnt/gentoo/usr && tar xpf /tmp/portage-latest.xz
 ```
 
-# chroot
+### chroot
 ```sh
 cd /mnt/gentoo
 mount -t proc none proc
@@ -68,7 +68,7 @@ env -i HOME=/root TERM=$TERM chroot . bash -l
 export PS1="(chroot) $PS1"
 ```
 
-# fstab
+### fstab
 
   /dev/sda3               /boot           ext4            nodiratime      1 2
   /dev/sda5               none            swap            sw              0 0
@@ -77,12 +77,12 @@ export PS1="(chroot) $PS1"
   # btrfs
   /dev/sda6		/		btrfs defaults,noatime,compress=lzo,autodefrag,subvol=root	0 0
 
-# timezone
+### timezone
 ```sh
 ln -sf /usr/share/zoneinfo/America/Caracas /etc/localtime
 ```
 
-# Configure make.conf
+### Configure make.conf
 
   CFLAGS="-march=native -O2 -fpredictive-commoning -fexcess-precision=fast -mfpmath=sse -pipe"
   CXXFLAGS="${CFLAGS}"                                                            
@@ -108,22 +108,22 @@ ln -sf /usr/share/zoneinfo/America/Caracas /etc/localtime
   INPUT_DEVICES="mouse keyboard evdev"
 
 
-# hostname
+### hostname
 ```sh
 sed -i '2s/localhost/desktop.normandy.lab/g' /etc/conf.d/hostname
 ```
 
-# keymap
+### keymap
 ```sh
 sed -i '3s/us/es/g' /etc/conf.d/keymaps
 ```
 
-# clock
+### clock
 ```sh
 sed -i '5s/UTC/local/g' /etc/conf.d/hwclock
 ```
 
-# language
+### language
 ```sh
 echo 'es_VE.UTF-8 UTF-8' >> /etc/locale.gen
 echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen
@@ -131,12 +131,12 @@ locale-gen
 eselect locale set 3
 ```
 
-# set desktop profile (check with eselect profile list)
+### set desktop profile (check with eselect profile list)
 ```sh
 eselect profile set 3
 ```
 
-# kernel install
+### kernel install
 ```sh
 emerge gentoo-sources 
 cd /usr/src/linux
@@ -145,18 +145,18 @@ cp arch/x86_64/boot/bzImage /boot/kernel-3.12.13-gentoo
 cp System.map /boot/System.map-3.12.13-gentoo
 ```
 
-# grub
+### grub
 ```sh
 emerge grub os-prober
 ```
 
-# generate grub2 confs
+### generate grub2 confs
 ```sh
 grub2-install --no-floppy /dev/sda
 grub2-mkconfig -o /boot/grub/grub.cfg
 ```
 
-# Network configuration
+### Network configuration
 ```sh
 emerge bridge-utils
 
@@ -180,12 +180,12 @@ ln -s net.lo net.enp1s0
 rc-update add net.br0 default
 ```
 
-# swap optimization
+### swap optimization
 ```sh
 echo 'vm.swappiness = 20' > /etc/sysctl.d/swappiness.conf
 ```
 
-# x11
+### x11
 ```sh
 echo 'app-shells/zsh doc examples' >> /etc/portage/package.use
 echo 'x11-drivers/ati-drivers -qt4' >> /etc/portage/package.use
@@ -198,7 +198,7 @@ ntfs3g firefox-bin thunderbird-bin pgadmin3 terminator pyxdg google-chrome \
 google-perftools colordiff rsyslog logrotate lvm2
 ```
 
-# fcron
+### fcron
 ```sh
 echo 'sys-process/fcron -mta' >> /etc/portage/package.use
 emerge fcron
@@ -206,12 +206,12 @@ emerge --config sys-process/fcron
 rc-update add fcron default
 ```
 
-# lvm
+### lvm
 ```sh
 rc-update add lvm default
 ```
 
-# remmina
+### remmina
 ```sh
 echo 'net-misc/remmina' >> /etc/portage/package.keywords
 echo 'net-misc/remmina freerdp ssh' >> /etc/portage/package.use
@@ -219,18 +219,18 @@ echo 'net-misc/freerdp' >> /etc/portage/package.keywords
 emerge remmina
 ```
 
-# logs
+### logs
 ```sh
 rc-update add rsyslog default
 ```
 
-# user
+### user
 ```sh
 useradd -m -s /bin/zsh -g users -G wheel,audio,cdrom,video,cdrw,usb netalien
 passwd netalien
 ```
 
-# If kde
+### If kde
 ```sh
 echo 'dev-qt/qtgui gtkstyle' >> /etc/portage/package.use
 echo 'dev-python/PyQt4 webkit declarative sql script' >> /etc/portage/package.use
@@ -243,7 +243,7 @@ sed -i '10s/xdm/kdm/g' /etc/conf.d/xdm
 rc-update add xdm default
 ```
 
-# extra apps
+### extra apps
 ```sh
 echo 'sys-process/glances' >> /etc/portage/package.keywords
 echo 'sys-process/nmon' >> /etc/portage/package.keywords
@@ -257,14 +257,14 @@ emerge -puN iotop atop htop dstat glances sshpass mtr nethogs iptraf-ng nmap \
     tcpdump bind-tools rdiff-backup ntop p7zip fio nmon lsof
 ```
 
-# logout
+### logout
 ```sh
 exit
 cd
 umount -l /mnt/gentoo/dev /mnt/gentoo/sys /mnt/gentoo/proc /mnt/gentoo/boot /mnt/gentoo
 ```
 
-# qemu/kvm libvirt nested virtualization
+### qemu/kvm libvirt nested virtualization
 ```sh
 echo 'options kvm-intel nested=1' > /etc/modprobe.d/kvm_intel_nested.conf
 
@@ -299,13 +299,13 @@ cp /media/data02/Linux/ConfigFiles/polkit/20-libvirt.rules /etc/polkit-1/rules.d
 chmod 644 /etc/polkit-1/rules.d/20-libvirt.rules
 ```
 
-# moc
+### moc
 ```sh
 echo 'media-sound/moc aac ffmpeg musepack' >> /etc/portage/package.use
 emerge moc
 ```
 
-# vlc
+### vlc
 ```sh
 echo 'media-video/vlc a52 aac bluray musepack matroska wma-fixed x264' >> /etc/portage/package.use
 echo 'media-libs/libbluray aacs' >> /etc/portage/package.use
@@ -313,7 +313,7 @@ echo 'sys-libs/zlib minizip' >> /etc/portage/package.use
 emerge vlc
 ```
 
-# fontset
+### fontset
 ```sh
 euse -E infinality
 for i in {1..40}; do eselect fontconfig disable $i; done
@@ -328,7 +328,7 @@ eselect lcdfilter set infinality
 eselect fontconfig enable 70-no-bitmaps.conf # due to problem with google chrome v33
 ```
 
-# overlays
+### overlays
 ```sh
 echo 'dev-vcs/subversion' >> /etc/portage/package.keywords
 echo 'app-portage/layman subversion' >> /etc/portage/package.use

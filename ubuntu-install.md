@@ -1,43 +1,43 @@
 Ubuntu
 ======
 
-# Give root a password
+### Give root a password
 ```sh
 sudo passwd root
 ```
 
-# Update repos url
+### Update repos url
 ```sh
 sed -i 's/ve.archive.ubuntu.com/us.archive.ubuntu.com/g' /etc/apt/sources.list
 ```
 
-# Create folders for custom partitions
+### Create folders for custom partitions
 ```sh
 mkdir -pv /media/data0{0,1,2}
 ```
 
-# Add to fstab
+### Add to fstab
 
   /dev/cinder-volumes/storage     /media/data00   xfs     defaults,noatime,nodiratime,norelatime  0       0
   /dev/sdb2                       /media/data01   ntfs-3g defaults        0       0
   /dev/sdb3                       /media/data02   ntfs-3g defaults        0       0
 
-# mount custom partitions
+### mount custom partitions
 ```sh
 mount -a
 ``` 
 
-# Update repos and system
+### Update repos and system
 ```sh
 sudo su
 apt-get update && apt-get dist-upgrade
 ```
 
-# Personalize bash (add at bottom)
+### Personalize bash (add at bottom)
 
 vi /etc/bash.bashrc
 ```sh
-# Aliases
+### Aliases
 
 alias ll='ls -lh --color=auto'
 alias la='ls -lhA --color=auto'
@@ -57,21 +57,21 @@ alias stopdayco='/etc/init.d/openvpn stop dayco'
 alias startsigis='/etc/init.d/openvpn start sigis'
 alias stopsigis='/etc/init.d/openvpn stop sigis'
 
-# Configs
+### Configs
 shopt -s histappend
 history -a
 
-# Exports
+### Exports
 export EDITOR='/usr/bin/vim'
 export HISTSIZE=2000
 export HISTFILESIZE=$HISTSIZE
 export HISTTIMEFORMAT="%d %b | %k:%M -> "
 ```
 
-# Config interfaces
+### Config interfaces
 ```sh
 cat > /etc/network/interfaces <<_EOF
-# interfaces(5) file used by ifup(8) and ifdown(8)
+### interfaces(5) file used by ifup(8) and ifdown(8)
 auto lo
 iface lo inet loopback
 
@@ -91,32 +91,32 @@ iface br0 inet static
 _EOF
 ``` 
 
-# Install important packages
+### Install important packages
 ```sh
 apt-get install vim vim-addon-manager vim-syntastic vim-gnome vim-scripts wajig debtags ctags vim-doc cscope exuberant-ctags reportbug apt-move apt-file deborphan apt-show-versions debsums debconf-utils resolvconf
 ```
 
-# Install extra packages
+### Install extra packages
 ```sh
 wajig install vim-syntax-docker vim-syntax-go htop iotop sysstat nethogs iptraf-ng wireshark nmap mtr bind9utils remmina remmina-plugin-vnc remmina-plugin-rdp terminator pgadmin3 tcpdump p7zip-full p7zip-rar fio git subversion ffmpegthumbnailer kffmpegthumbnailer thunderbird pavucontrol
 ```
 
-# libvirt and friends
+### libvirt and friends
 ```sh
 wajig install libvirt-bin qemu-kvm virt-manager libguestfs-tools
 ```
 
-# vlc and moc
+### vlc and moc
 ```sh
 wajig install vlc moc moc-ffmpeg-plugin
 ```
 
-# nested kvm
+### nested kvm
 ```sh
 echo 'options kvm-intel nested=1' > /etc/modprobe.d/99-intel-nestedvirt.conf
 ```
 
-# vim modifications
+### vim modifications
 
   set nocompatible        " Use Vim defaults (much better!)
   set bs=2                " Allow backspacing over everything in insert mode
