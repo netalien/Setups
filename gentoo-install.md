@@ -70,12 +70,14 @@ export PS1="(chroot) $PS1"
 
 ### fstab
 
-  /dev/sda3               /boot           ext4            nodiratime      1 2
+> /dev/sda3               /boot           ext4            nodiratime      1 2
   /dev/sda5               none            swap            sw              0 0
   # xfs 
   /dev/sda6               /               xfs             nodiratime      0 1
   # btrfs
   /dev/sda6		/		btrfs defaults,noatime,compress=lzo,autodefrag,subvol=root	0 0
+
+
 
 ### timezone
 ```sh

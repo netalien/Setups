@@ -63,12 +63,13 @@ emerge --sync
 
 ### fstab
 
-  /dev/sda3               /boot           ext4            nodiratime      1 2
+> /dev/sda3               /boot           ext4            nodiratime      1 2
   /dev/sda5               none            swap            sw              0 0
   # For xfs 
   /dev/sda6               /               xfs             nodiratime      0 1
   # For btrfs
   /dev/sda6		/		btrfs defaults,noatime,compress=lzo,autodefrag,subvol=root	0 0
+
 
 ### timezone
 ```sh
@@ -142,7 +143,7 @@ emerge boot-update os-prober
 
 ### Edit /etc/boot.conf
 
-  # with btrfs
+> # with btrfs
   boot {
       generate grub
       default "Funtoo Linux" 
@@ -177,6 +178,7 @@ emerge boot-update os-prober
       type win7
       params root=/dev/sda1
   }
+
 
 ### generate grub2 confs
 ```sh

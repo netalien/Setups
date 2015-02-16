@@ -18,9 +18,12 @@ mkdir -pv /media/data0{0,1,2}
 
 ### Add to fstab
 
+>
   /dev/cinder-volumes/storage     /media/data00   xfs     defaults,noatime,nodiratime,norelatime  0       0
   /dev/sdb2                       /media/data01   ntfs-3g defaults        0       0
   /dev/sdb3                       /media/data02   ntfs-3g defaults        0       0
+
+
 
 ### mount custom partitions
 ```sh
