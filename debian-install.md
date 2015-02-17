@@ -84,7 +84,7 @@ Add at the bottom of /etc/bash.bashrc:
 ### Important packages
 
 ```sh
-apt-get install vim vim-syntax-docker vim-syntax-go vim-haproxy vim-puppet vim-gnome vim-scripts vim-addon-manager vim-syntastic vim-tlib vim-doc wajig debtags apt-move apt-file deborphan apt-show-versions debsums debconf-utils cscope exuberant-ctags htop iotop sysstat nethogs iptraf-ng wireshark nmap mtr bind9utils remmina remmina-plugin-vnc remmina-plugin-rdp terminator pgadmin3 tcpdump p7zip-full p7zip-rar fio git subversion pavucontrol sudo strace ltrace golang-go debian-keyring openvpn resolvconf icedove glances numlockx irssi firmware-linux-nonfree
+apt-get install vim vim-syntax-docker vim-syntax-go vim-haproxy vim-puppet vim-gnome vim-scripts vim-addon-manager vim-syntastic vim-tlib vim-doc wajig debtags apt-move apt-file deborphan apt-show-versions debsums debconf-utils cscope exuberant-ctags htop iotop sysstat nethogs iptraf-ng wireshark nmap mtr bind9utils remmina remmina-plugin-vnc remmina-plugin-rdp terminator pgadmin3 tcpdump p7zip-full p7zip-rar fio git subversion pavucontrol sudo strace ltrace golang-go debian-keyring openvpn resolvconf icedove glances numlockx irssi firmware-linux-nonfree libcanberra-gtk-module libcanberra-gtk3-module
 ```
 
 ### libvirt and friends
