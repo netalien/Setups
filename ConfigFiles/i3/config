@@ -185,3 +185,6 @@ exec --no-startup-id eval $(cat ~/.fehbg)
 
 # Activate numlock
 exec --no-startup-id numlockx on
+
+# Keep gnome compatibility
+exec --no-startup-id gnome-settings-daemon
