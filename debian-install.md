@@ -1,11 +1,11 @@
-Debian 8.0 (testing) 
+Debian 8.0 (Jessie) 
 ====================
 
 ### NetworkManager GTFO
 
 Install bridge utils
 ```sh
-apt-get install bridge-utils
+apt-get install bridge-utils resolvconf
 ```
 
 ```sh
@@ -28,10 +28,11 @@ iface br0 inet static
         broadcast 172.16.1.255
         netmask 255.255.0.0
         gateway 172.16.0.1
-	bridge_stp off       # disable Spanning Tree Protocol
+        dns-nameservers 8.8.8.8 8.8.4.4
+	      bridge_stp off       # disable Spanning Tree Protocol
         bridge_waitport 0    # no delay before a port becomes available
         bridge_fd 0          # no forwarding delay
-	bridge_ports eth0    # bridge eth0 only
+	      bridge_ports eth0    # bridge eth0 only
         #bridge_ports none    # if you do not want to bind to any ports
         #bridge_ports regex eth* # use a regular expression to define ports
 _EOF
@@ -84,7 +85,7 @@ Add at the bottom of /etc/bash.bashrc:
 ### Important packages
 
 ```sh
-apt-get install vim vim-syntax-docker vim-syntax-go vim-haproxy vim-puppet vim-gnome vim-scripts vim-addon-manager vim-syntastic vim-tlib vim-doc wajig debtags apt-move apt-file deborphan apt-show-versions debsums debconf-utils cscope exuberant-ctags htop iotop sysstat nethogs iptraf-ng wireshark nmap mtr bind9utils remmina remmina-plugin-vnc remmina-plugin-rdp terminator pgadmin3 tcpdump p7zip-full p7zip-rar fio git subversion pavucontrol sudo strace ltrace golang-go debian-keyring openvpn resolvconf icedove glances numlockx irssi firmware-linux-nonfree libcanberra-gtk-module libcanberra-gtk3-module
+apt-get install vim vim-syntax-go vim-haproxy vim-puppet vim-gnome vim-scripts vim-addon-manager vim-syntastic vim-tlib vim-doc wajig debtags apt-move apt-file deborphan apt-show-versions debsums debconf-utils cscope exuberant-ctags htop iotop sysstat nethogs iptraf-ng wireshark nmap mtr bind9utils remmina remmina-plugin-vnc remmina-plugin-rdp terminator pgadmin3 tcpdump p7zip-full p7zip-rar fio git subversion pavucontrol sudo strace ltrace golang-go debian-keyring openvpn resolvconf icedove glances numlockx irssi firmware-linux-nonfree libcanberra-gtk-module libcanberra-gtk3-module
 ```
 
 ### libvirt and friends
@@ -114,10 +115,10 @@ cp /media/data02/Linux/ConfigFiles/Moc/config .moc/config && chmod 644 .moc/conf
 ### nested kvm
 
 ```sh
-echo 'options kvm-intel nested=1' > /etc/modprobe.d/99-intel-nestedvirt.conf
+echo 'options kvm-amd nested=1' > /etc/modprobe.d/99-amd-nestedvirt.conf
 ```
 
-### vim modifications
+### vim modifications (/etc/vim/vimrc.local)
 
 set nocompatible        " Use Vim defaults (much better!)
 set bs=2                " Allow backspacing over everything in insert mode
@@ -169,6 +170,16 @@ gsettings set org.gnome.settings-daemon.plugins.cursor active false
 Set nautilus to sort folders first
 ```sh
 gsettings set org.gnome.nautilus.preferences sort-directories-first true
+```
+
+Show date on gnome interface
+```sh
+gsettings set org.gnome.desktop.interface clock-show-date true
+```
+
+Enable minimize and maximize buttons
+```sh
+gsettings set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
 ```
 
 ### Unneeded services
