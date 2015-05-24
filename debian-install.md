@@ -150,6 +150,17 @@ chmod 644 /usr/share/vim/vim74/colors/skittles_dark.vim
 
 ### i3 setup
 
+Prefer newer i3 from jessie-backports
+```sh
+echo 'deb http://http.debian.net/debian jessie-backports main contrib non-free' > /etc/apt/source.list.d/jessie-backports.list
+
+cat > /etc/apt/preferences.d/i3-jessie-backport.pref <<EOF
+Package: i3*
+Pin: release n=jessie-backports
+Pin-Priority: 999
+EOF
+```
+
 Install i3
 ```sh
 wajig install i3
