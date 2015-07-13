@@ -316,6 +316,7 @@ localectl set-x11-keymap en
 `sh
 timedatectl set-timezone America/Caracas
 timedatectl set-ntp true
+timedatectl --adjust-system-clock set-local-rtc 1
 
 systemctl enable chronyd && systemctl start chronyd
 `
@@ -361,10 +362,11 @@ echo 'app-admin/sudo offensive -sendmail' >> /etc/portage/package.use/sudo
 echo 'dev-vcs/git doc -webdav' >> /etc/portage/package.use/git
 echo 'www-client/google-chrome' >> /etc/portage/package.keywords/google-chrome
 echo 'x11-xterms/terminator' >> /etc/portage/package.keywords/terminator
+echo 'gnome-extra/zenity -webkit' >> /etc/portage/package.use/zenity
 
 emerge -p xorg-x11 i3 i3status i3lock firefox-bin thunderbird-bin pgadmin3 \
 terminator google-chrome google-perftools colordiff gvim numlockx feh moc \
-scrot irssi tmux git subversion dmenu alsa-utils
+scrot irssi tmux git subversion dmenu alsa-utils zenity mupdf
 ```
 
 ### Extra config for i3
