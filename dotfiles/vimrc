@@ -1,0 +1,71 @@
+call plug#begin('/home/netalien/.vim/plugged')
+
+" http://vimawesome.com/plugin/syntastic
+Plug 'scrooloose/syntastic'
+
+" http://vimawesome.com/plugin/vim-airline-sad-beautiful-tragic
+Plug 'bling/vim-airline'
+
+" http://vimawesome.com/plugin/vim-colors-solarized-sparks-fly
+Plug 'altercation/vim-colors-solarized'
+
+" http://vimawesome.com/plugin/vim-go-all-too-well
+Plug 'fatih/vim-go', { 'for': 'go'}
+
+" http://vimawesome.com/plugin/json-vim
+Plug 'elzr/vim-json'
+
+" http://vimawesome.com/plugin/fugitive-vim
+Plug 'tpope/vim-fugitive'
+
+" http://vimawesome.com/plugin/ctrlp-vim-state-of-grace
+Plug 'kien/ctrlp.vim'
+
+" http://vimawesome.com/plugin/gundo
+Plug 'sjl/gundo.vim'
+
+" http://vimawesome.com/plugin/ag-vim
+Plug 'rking/ag.vim'
+
+" http://vimawesome.com/plugin/surround-vim
+Plug 'tpope/vim-surround'
+
+call plug#end()
+
+" Syntastic settings
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+
+" Airline settings
+let g:airline#extensions#tabline#enabled = 1
+let g:airline_powerline_fonts = 1
+set laststatus=2
+
+" Solarized settings
+syntax enable
+set background=dark
+colorscheme solarized
+
+" Gundo settings
+nnoremap <F5> :GundoToggle<CR>
+
+" vim-json settings
+au! BufRead,BufNewFile *.json set filetype=json
+
+augroup json_autocmd
+  autocmd!
+  autocmd FileType json set autoindent
+  autocmd FileType json set formatoptions=tcq2l
+  autocmd FileType json set textwidth=78 shiftwidth=2
+  autocmd FileType json set softtabstop=2 tabstop=8
+  autocmd FileType json set expandtab
+  autocmd FileType json set foldmethod=syntax
+augroup END
+
+

@@ -1,0 +1,25 @@
+export EDITOR=vim
+export BROWSER=google-chrome-stable
+
+# Load antigen
+source /home/netalien/antigen/antigen.zsh
+
+# Load main library
+antigen use oh-my-zsh
+
+# Load plugins
+antigen bundle command-not-found
+antigen bundle common-aliases
+antigen bundle docker
+antigen bundle extract
+antigen bundle git
+antigen bundle history-substring-search
+antigen bundle svn-fast-info
+antigen bundle zsh-users/zsh-syntax-highlighting
+antigen bundle zsh-users/zsh-completions src
+
+# Theme
+antigen theme amuse
+
+# Apply zsh settings
+antigen apply
