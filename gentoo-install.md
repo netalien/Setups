@@ -1,22 +1,36 @@
 Gentoo Install
 ==============
 
+### Useful from sysrescuecd
+Check current monitor settings
+`sh
+xset -q
+`
+Prevent scree blanking
+`sh
+xset s off
+`
+Disable monitor energy start (DPMS)
+`sh
+xset -dpms
+`
 
 ### Partitions
++ /boot
 ```sh
-mkfs.ext4 /dev/sda3
+mkfs.ext4 /dev/sda4
 ```
 
-+ xfs for /
++  / (without btrfs)
 ```sh
-mkfs.xfs /dev/sda6
+mkfs.ext4 /dev/sda5
 ```
 
-+ btrfs for /
++ / (with btrfs)
 ```sh
-mkfs.btrfs -f -L LINUX /dev/sda6
+mkfs.btrfs -f -L LINUX /dev/sda5
 mkdir /mnt/newroot
-mount -t btrfs -o defaults,noatime,compress=lzo,autodefrag /dev/sda6
+mount -t btrfs -o defaults,noatime,compress=lzo,autodefrag /dev/sda5
 /mnt/newroot
 btrfs subvol create /mnt/newroot/root
 mount -t btrfs -o defaults,noatime,compress=lzo,autodefrag,subvol=root
@@ -25,7 +39,7 @@ mount -t btrfs -o defaults,noatime,compress=lzo,autodefrag,subvol=root
 
 Swap setup
 ```sh
-mkswap /dev/sda5 && swapon /dev/sda5
+mkswap /dev/sda6 && swapon /dev/sda6
 ```
 
 ### Mount all
@@ -33,7 +47,10 @@ mkswap /dev/sda5 && swapon /dev/sda5
 mkdir /mnt/gentoo
 mount /dev/sda5 /mnt/gentoo
 mkdir /mnt/gentoo/boot
-mount /dev/sda3 /mnt/gentoo/boot
+mount /dev/sda4 /mnt/gentoo/boot
+mkdir /mnt/gentoo/boot/efi
+mount /dev/sda1 /mnt/gentoo/boot/efi
+mkdir /mnt/gentoo/boot/efi/EFI/gentoo
 ```
 
 ### Fix date
@@ -55,28 +72,43 @@ cd /mnt/gentoo && tar xjpf /mnt/data/Linux/stage3-*.tar.bz2
 ### install portage
 ```sh
 cd /mnt/gentoo/usr && tar xpf /tmp/portage-latest.xz
+emerge --sync
 ```
 
 ### chroot
+
+Note: rslave is need for systemd only
 ```sh
-cd /mnt/gentoo
-mount -t proc none proc
-mount --rbind /sys sys
-mount --rbind /dev dev
-cp /etc/resolv.conf etc 
-env -i HOME=/root TERM=$TERM chroot . bash -l
+mount -t proc proc /mnt/gentoo/proc
+mount --rbind /sys /mnt/gentoo/sys
+mount --make-rslave /mnt/gentoo/sys
+mount --rbind /dev /mnt/gentoo/dev
+mount --make-rslave /mnt/gentoo/dev
+cp -L /etc/resolv.conf /mnt/gentoo/etc/  
+env -i HOME=/root TERM=$TERM chroot /mnt/gentoo bash -l
 export PS1="(chroot) $PS1"
 ```
 
+### get UUID
+`sh
+for i in 1 {4..7}; do blkid /dev/sda$i; done
+`
+
 ### fstab
-
-> /dev/sda3               /boot           ext4            nodiratime      1 2  
-  /dev/sda5               none            swap            sw              0 0  
-  # xfs   
-  /dev/sda6               /               xfs             nodiratime      0 1  
-  # btrfs  
-  /dev/sda6		/		btrfs defaults,noatime,compress=lzo,autodefrag,subvol=root	0 0
-
+`
+cat > /etc/fstab <<_EOF
+# /boot on /dev/sda4
+UUID=c1008c3b-ab1a-4784-b474-c2a63fd5b82c /boot           ext4    defaults        0       2
+# /boot/efi on /dev/sda1 
+UUID=2ED0-0732  /boot/efi       vfat    umask=0077      0       1
+# / on /dev/sda5
+UUID=85de2405-ac8c-42d1-b380-336636d8b02e /               ext4     noatime         0       1
+# swap on /dev/sda6
+UUID=a4ae23d8-af36-4170-93c3-2a928cc71c04 none            swap    sw              0       0
+# /home on /dev/sda7
+UUID=a9b71978-3228-4127-bd42-3e54e2b8897c /home           xfs     noatime         0       2
+_EOF
+`
 
 
 ### timezone
@@ -86,78 +118,212 @@ ln -sf /usr/share/zoneinfo/America/Caracas /etc/localtime
 
 ### Configure make.conf
 
-> CFLAGS="-march=native -O2 -fpredictive-commoning -fexcess-precision=fast -mfpmath=sse -pipe"  
-  CXXFLAGS="${CFLAGS}"  
-  LDFLAGS="-Wl,-O1 -Wl,--as-needed -Wl,--hash-style=both -Wl,-z,now"  
-  CHOST="x86_64-pc-linux-gnu"  
-  MAKEOPTS="-j2"  
-  # accepts  
-  ACCEPT_KEYWORDS=""  
-  ACCEPT_LICENSE="*"  
-  # USEs  
-  USE="bash-completion bindist -bluetooth ccache -gdbm -gtk3 -handbook -introspection \  
-    -ipv6 kde -ldap lzma lzo mmx pch python -spell sse sse2 sse3 ssse3 vim-syntax \  
-    xattr -zeroconf"  
-  # emerge opts  
-  EMERGE_DEFAULT_OPTS="--verbose"  
-  # hardware opts  
-  LINGUAS="en en_US en_EN"  
-  VIDEO_CARDS="radeon fglrx"  
-  INPUT_DEVICES="mouse keyboard evdev"  
+This was for an Intel Core 2 Duo E8400
+`sh
+cat > /etc/portage/make.conf <<_EOF
+CFLAGS="-march=native -O2 -fpredictive-commoning -fexcess-precision=fast -mfpmath=sse -pipe"  
+CXXFLAGS="${CFLAGS}"  
+LDFLAGS="-Wl,-O1 -Wl,--as-needed -Wl,--hash-style=both -Wl,-z,now"  
+CHOST="x86_64-pc-linux-gnu"  
+MAKEOPTS="-j2"  
+# accepts  
+ACCEPT_KEYWORDS=""  
+ACCEPT_LICENSE="*"  
+# USEs  
+USE="bash-completion bindist -bluetooth ccache -gdbm -gtk3 -handbook -introspection \  
+  -ipv6 kde -ldap lzma lzo mmx pch python -spell sse sse2 sse3 ssse3 vim-syntax \  
+  xattr -zeroconf"  
+# emerge opts  
+EMERGE_DEFAULT_OPTS="--verbose"  
+# hardware opts  
+LINGUAS="en en_US en_EN"  
+VIDEO_CARDS="radeon"  
+INPUT_DEVICES="mouse keyboard evdev"  
+_EOF
+`
 
-
-### hostname
-```sh
-sed -i '2s/localhost/desktop.normandy.lab/g' /etc/conf.d/hostname
-```
-
-### keymap
-```sh
-sed -i '3s/us/es/g' /etc/conf.d/keymaps
-```
-
-### clock
-```sh
-sed -i '5s/UTC/local/g' /etc/conf.d/hwclock
-```
-
-### language
-```sh
-echo 'es_VE.UTF-8 UTF-8' >> /etc/locale.gen
-echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen
-locale-gen
-eselect locale set 3
-```
+This for AMD APU
+`sh
+cat > /etc/portage/make.conf <<_EOF
+CFLAGS="-march=native -O2 -pipe"
+CXXFLAGS="${CFLAGS}"
+CHOST="x86_64-pc-linux-gnu"  
+MAKEOPTS="-j2"  
+# accepts  
+ACCEPT_KEYWORDS=""  
+ACCEPT_LICENSE="*"  
+# USEs  
+USE=""
+# emerge opts  
+EMERGE_DEFAULT_OPTS="--verbose"  
+# hardware opts  
+LINGUAS="en en_US"  
+VIDEO_CARDS="radeon"  
+INPUT_DEVICES="mouse keyboard evdev"  
+_EOF
+`
 
 ### set desktop profile (check with eselect profile list)
+
+This sets the desktop/gnome/systemd profile
 ```sh
-eselect profile set 3
+eselect profile set 5
 ```
+
+### Create mtab symlink
+
+Note: need by systemd
+`sh
+ln -sf /proc/self/mounts /etc/mtab
+`
 
 ### kernel install
 ```sh
 emerge gentoo-sources 
 cd /usr/src/linux
+make menuconfig
 make && make modules_install
-cp arch/x86_64/boot/bzImage /boot/kernel-3.12.13-gentoo
-cp System.map /boot/System.map-3.12.13-gentoo
+make install
+cp /boot/vmlinuz-4.0.5-gentoo /boot/efi/EFI/gentoo/bootx64.efi
+cp /boot/vmlinuz-4.0.5-gentoo /boot/efi/EFI/Boot/bootx64.efi
+emerge linux-firmware
 ```
 
-### grub
+### Update packages
+`sh
+euse -D ldap
+euse -E vim-syntax
+
+emerge -pUDN @world
+`
+
+### grub (BIOS mbr)
+
 ```sh
 emerge grub os-prober
 ```
 
-### generate grub2 confs
+generate grub2 confs
 ```sh
 grub2-install --no-floppy /dev/sda
 grub2-mkconfig -o /boot/grub/grub.cfg
 ```
 
-### Network configuration
-```sh
-emerge bridge-utils
+### Efibootmgr (UEFI)
 
+Install efibootmgr
+`sh
+emerge efibootmgr
+`
+
+Check current boot entries
+`sh
+efibootmgr
+`
+
+Delete obsolete boot entries (the bootnum *-b* comes from entries like Boot0004* something...)
+`sh
+efibootmgr -b 4 -B
+`
+
+Add gentoo's boot entry, params are: --create --disk --partition --label --loader
+`sh
+efibootmgr -c -d /dev/sda -p 1 -L "Gentoo" -l "\efi\gentoo\bootx64.efi" -u "root=UUID=85de2405-ac8c-42d1-b380-336636d8b02e init=/usr/lib/systemd/systemd"
+`
+
+### swap optimization
+```sh
+echo 'vm.swappiness = 20' > /etc/sysctl.d/swappiness.conf
+```
+
+### Base packages
+`sh
+echo 'app-shells/zsh doc examples' >> /etc/portage/package.use/zsh
+echo 'app-editors/vim perl python' >> /etc/portage/package.use/vim 
+
+emerge -p vim zsh portage-utils gentoolkit eix mlocate logrotate xfsprogs btrfs-progs ntfs3g chrony
+`
+
+### Cron
+
+Enable vixie
+`sh
+systemctl enable vixie-cron
+`
+
+### Add user
+```sh
+useradd -M -s /bin/zsh -g users -G wheel,audio,cdrom,video,cdrw,usb netalien
+passwd netalien
+```
+
+
+### Set systemd-networkd
+
+`sh
+emerge bridge-utils
+`
+
+Create bridge for systemd-networkd
+`sh
+cat > /etc/systemd/network/bridge0.netdev <<_EOF
+[NetDev]
+Name=bridge0
+Kind=bridge
+_EOF
+`
+
+`sh
+cat > /etc/systemd/network/50-bridge0.network <<_EOF
+[Match]
+Name=bridge0
+
+[Network]
+Address=192.168.1.2/24
+Gateway=192.168.1.1
+DNS=192.168.1.1
+_EOF
+
+cat > /etc/systemd/network/51-slave.network <<_EOF
+[Match]
+Name=eth0
+
+[Network]
+Bridge=bridge0
+_EOF
+
+systemctl enable systemd-networkd.service
+systemctl start systemd-networkd.service
+
+ln -snf /run/systemd/resolve/resolv.conf /etc/resolv.conf
+systemctl enable systemd-resolved.service
+systemctl start systemd-resolved.service
+`
+
+### Set hostname
+`sh
+hostnamectl set-hostname desktop.edmv.lab
+`
+
+### Set locale info
+`sh
+localectl set-locale LANG=en_US.utf8
+localectl set-keymap en
+localectl set-x11-keymap en
+`
+
+### Set time and date
+`sh
+timedatectl set-timezone America/Caracas
+timedatectl set-ntp true
+
+systemctl enable chronyd && systemctl start chronyd
+`
+
+### Network configuration
+
+Note: only when not using systemd-networkd
+```sh
 cat > /etc/conf.d/net <<_EOF
 brctl_br0="setfd 0
 sethello 2
@@ -178,55 +344,118 @@ ln -s net.lo net.enp1s0
 rc-update add net.br0 default
 ```
 
-### swap optimization
-```sh
-echo 'vm.swappiness = 20' > /etc/sysctl.d/swappiness.conf
-```
 
 ### x11
 ```sh
-echo 'app-shells/zsh doc examples' >> /etc/portage/package.use
-echo 'x11-drivers/ati-drivers -qt4' >> /etc/portage/package.use
-echo 'media-libs/libcanberra gtk3' >> /etc/portage/package.use
-echo 'www-client/google-chrome' >> /etc/portage/package.keywords
-echo 'dev-lang/python sqlite' >> /etc/portage/package.use
+euse -D bluetooth qt4
+euse -E ffmpeg
 
-emerge -p xorg-x11 fluxbox vim gvim zsh chrony portage-utils gentoolkit eix \
-ntfs3g firefox-bin thunderbird-bin pgadmin3 terminator pyxdg google-chrome \
-google-perftools colordiff rsyslog logrotate lvm2
+echo 'dev-libs/keybinder python' >> /etc/portage/package.use/keybinder
+echo 'dev-db/postgresql perl python threads' >> /etc/portage/package.use/postgresql
+echo 'media-plugins/alsa-plugins' >> /etc/portage/package.use/alsa-plugins
+echo 'x11-libs/vte python' >> /etc/portage/package.use/vte
+echo 'x11-xterms/terminator -gnome' >> /etc/portage/package.use/terminator
+echo 'app-editors/gvim -gnome perl python' >> /etc/portage/package.use/gvim 
+echo 'media-sound/moc musepack wavpack' >> /etc/portage/package.use/moc
+echo 'app-admin/sudo offensive -sendmail' >> /etc/portage/package.use/sudo
+echo 'dev-vcs/git doc -webdav' >> /etc/portage/package.use/git
+echo 'www-client/google-chrome' >> /etc/portage/package.keywords/google-chrome
+echo 'x11-xterms/terminator' >> /etc/portage/package.keywords/terminator
+
+emerge -p xorg-x11 i3 i3status i3lock firefox-bin thunderbird-bin pgadmin3 \
+terminator google-chrome google-perftools colordiff gvim numlockx feh moc \
+scrot irssi tmux git subversion dmenu alsa-utils
 ```
 
-### fcron
+### Extra config for i3
+
+This is done because the default terminal app is terminator which set WM_CLASS to *x-terminal-emulator* no matter the console app running within it
 ```sh
-echo 'sys-process/fcron -mta' >> /etc/portage/package.use
-emerge fcron
-emerge --config sys-process/fcron
-rc-update add fcron default
+cat > /usr/bin/tmocp <<_EOF
+terminator -c mocp -e mocp
+_EOF
+
+chmod +x /usr/bin/tmocp
+
+cat > /usr/bin/tirssi <<_EOF
+terminator -c irssi -e irssi
+_EOF
+
+chmod +x /usr/bin/tirssi
+
+cat > /usr/bin/tglances <<_EOF
+terminator -c glances -e glances
+_EOF
+
+chmod +x /usr/bin/tglances
+
+cat > /usr/bin/thtop <<_EOF
+terminator -c htop -e htop
+_EOF
+
+chmod +x /usr/bin/thtop
+```
+
+### Openvpn
+`sh
+echo 'net-misc/openvpn down-root iproute2' >> /etc/portage/package.use/openvpn
+
+emerge openvpn
+
+mkdir -p /etc/openvpn/keys/{one,two}
+cp /media/data00/OpenVPN/{one,two}.conf /etc/openvpn/
+chmod 644 /etc/openvpn/{one,two}.conf
+cp /media/data00/OpenVPN/one/* /etc/openvpn/keys/one/  
+cp /media/data00/OpenVPN/two/* /etc/openvpn/keys/two/  
+chmod 600 /etc/openvpn/keys/one/*
+chmod 600 /etc/openvpn/keys/two/*
+
+ln -s /usr/lib/systemd/system/openvpn@.service /usr/lib/systemd/system/openvpn@one.service
+ln -s /usr/lib/systemd/system/openvpn@.service /usr/lib/systemd/system/openvpn@two.service
+`
+
+### remmina
+```sh
+echo 'net-misc/remmina freerdp ssh' >> /etc/portage/package.use/remmina
+echo 'net-misc/remmina **' >> /etc/portage/package.keywords/remmina
+echo 'net-misc/remmina' >> /etc/portage/package.unmask/remmina
+emerge -1 remmina freerdp
+```
+
+### extra apps
+```sh
+echo 'sys-process/glances' >> /etc/portage/package.keywords/glances
+echo 'net-analyzer/nmap ndiff nmap-update nping' >> /etc/portage/package.use/nmap
+echo 'net-analyzer/openbsd-netcat' >> /etc/portage/package.keywords/openbsd-netcat
+echo 'media-libs/gd fontconfig' >> /etc/portage/package.use/gd
+echo 'app-arch/p7zip rar -wxwidgets' >> /etc/portage/package.use/p7zip
+
+emerge -puN iotop atop htop dstat glances sshpass mtr nethogs iptraf-ng nmap \ 
+    arpwatch iputils sysstat iftop nload procinfo-ng tcpdump bind-tools \
+    p7zip fio lsof telnet-bsd openbsd-netcat pip the_silver_searcher strace
 ```
 
 ### lvm
 ```sh
+emerge lvm2
+
 rc-update add lvm default
 ```
 
-### remmina
-```sh
-echo 'net-misc/remmina' >> /etc/portage/package.keywords
-echo 'net-misc/remmina freerdp ssh' >> /etc/portage/package.use
-echo 'net-misc/freerdp' >> /etc/portage/package.keywords
-emerge remmina
-```
+### rsyslog (if not using systemd)
+`sh
+emerge rsyslog
 
-### logs
-```sh
 rc-update add rsyslog default
-```
+`
 
-### user
-```sh
-useradd -m -s /bin/zsh -g users -G wheel,audio,cdrom,video,cdrw,usb netalien
-passwd netalien
-```
+### ATI Drivers
+`sh
+
+echo 'x11-drivers/ati-drivers -qt4' >> /etc/portage/package.use
+
+emerge ati-drivers
+`
 
 ### If kde
 ```sh
@@ -241,30 +470,19 @@ sed -i '10s/xdm/kdm/g' /etc/conf.d/xdm
 rc-update add xdm default
 ```
 
-### extra apps
-```sh
-echo 'sys-process/glances' >> /etc/portage/package.keywords
-echo 'sys-process/nmon' >> /etc/portage/package.keywords
-echo 'net-analyzer/nmap -gtk -ncat ndiff nmap-update nping' >> /etc/portage/package.use
-echo 'media-libs/gd fontconfig' >> /etc/portage/package.use
-echo 'net-libs/libpcap netlink' >> /etc/portage/package.use
-echo 'dev-vcs/subversion -webdav-neon' >> /etc/portage/package.use
-
-emerge -puN iotop atop htop dstat glances sshpass mtr nethogs iptraf-ng nmap \ 
-    arpwatch iputils swatch sysstat iftop latencytop nload procinfo-ng acct \
-    tcpdump bind-tools rdiff-backup ntop p7zip fio nmon lsof
-```
 
 ### logout
 ```sh
 exit
 cd
-umount -l /mnt/gentoo/dev /mnt/gentoo/sys /mnt/gentoo/proc /mnt/gentoo/boot /mnt/gentoo
+umount -l /mnt/gentoo/dev{/shm,/pts,}
+umount -l /mnt/gentoo{/boot,/sys,/proc,}
+reboot
 ```
 
 ### qemu/kvm libvirt nested virtualization
 ```sh
-echo 'options kvm-intel nested=1' > /etc/modprobe.d/kvm_intel_nested.conf
+echo 'options kvm-amd nested=1' > /etc/modprobe.d/kvm_amd_nested.conf
 
 echo 'app-emulation/qemu' >> /etc/portage/package.keywords
 echo 'app-emulation/libvirt' >> /etc/portage/package.keywords
@@ -297,12 +515,6 @@ cp /media/data02/Linux/ConfigFiles/polkit/20-libvirt.rules /etc/polkit-1/rules.d
 chmod 644 /etc/polkit-1/rules.d/20-libvirt.rules
 ```
 
-### moc
-```sh
-echo 'media-sound/moc aac ffmpeg musepack' >> /etc/portage/package.use
-emerge moc
-```
-
 ### vlc
 ```sh
 echo 'media-video/vlc a52 aac bluray musepack matroska wma-fixed x264' >> /etc/portage/package.use
@@ -314,16 +526,15 @@ emerge vlc
 ### fontset
 ```sh
 euse -E infinality
-for i in {1..40}; do eselect fontconfig disable $i; done
-emerge -uND world
-for i in {32..36}; do eselect fontconfig enable $i; done # 62-croscore*
+for i in {1..32}; do eselect fontconfig disable $i; done
+emerge -uND @world
+for i in {25..28}; do eselect fontconfig enable $i; done # 62-croscore*
 eselect fontconfig enable 52-infinality.conf
 emerge liberation-fonts droid dejavu
 for i in {29..31}; do eselect fontconfig enable $i; done # google's droid fonts
 eselect fontconfig enable 33 # liberation fonts
 eselect infinality set infinality
 eselect lcdfilter set infinality
-eselect fontconfig enable 70-no-bitmaps.conf # due to problem with google chrome v33
 ```
 
 ### overlays
