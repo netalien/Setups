@@ -516,7 +516,7 @@ echo 'net-libs/gtk-vnc python' >> /etc/portage/package.use/gtk-vnc
 echo 'net-misc/spice-gtk python usbredir' >> /etc/portage/package.use/spice-gtk
 echo 'app-emulation/libvirt-glib python' >> /etc/portage/package.use/libvirt-glib
 echo 'net-dns/dnsmasq script' >> /etc/portage/package.use/dnsmasq
-echo 'app-emulation/qemu usbredir virtfs xattr' >> /etc/portage/package.use/qemu
+echo 'app-emulation/qemu spice usbredir virtfs xattr' >> /etc/portage/package.use/qemu
 echo 'app-emulation/libvirt pcap virt-network' >> /etc/portage/package.use/libvirt
 
 emerge libvirt virt-manager 
