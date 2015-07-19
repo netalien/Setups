@@ -228,7 +228,7 @@ efibootmgr -b 4 -B
 
 Add gentoo's boot entry, params are: --create --disk --partition --label --loader
 `sh
-efibootmgr -c -d /dev/sda -p 1 -L "Gentoo" -l "\efi\gentoo\bootx64.efi" -u "root=UUID=85de2405-ac8c-42d1-b380-336636d8b02e init=/usr/lib/systemd/systemd"
+efibootmgr -c -d /dev/sda -p 1 -L "Gentoo" -l "\efi\gentoo\bootx64.efi" -u "root=/dev/sda5 init=/usr/lib/systemd/systemd"
 `
 
 ### swap optimization
@@ -482,38 +482,46 @@ umount -l /mnt/gentoo{/boot,/sys,/proc,}
 reboot
 ```
 
+### Docker
+
+Install
+`sh
+cat > /etc/portage/package.keywords/docker <<_EOF
+app-emulation/docker
+_EOF
+
+cat > /etc/portage/package.use/docker <<_EOF
+app-emulation/docker btrfs overlay -device-mapper
+_EOF
+`
+
+Enable btrfs driver
+`sh
+mkdir /etc/systemd/system/docker.service.d
+
+cat > /etc/systemd/system/docker.service.d/docker.conf <<_EOF
+[Service]
+ExecStart=
+ExecStart=/usr/bin/docker -d -H fd:// --graph /media/data02/docker --storage-driver btrfs
+_EOF
+
+systemctl daemon-reload
+`
+
 ### qemu/kvm libvirt nested virtualization
 ```sh
 echo 'options kvm-amd nested=1' > /etc/modprobe.d/kvm_amd_nested.conf
 
-echo 'app-emulation/qemu' >> /etc/portage/package.keywords
-echo 'app-emulation/libvirt' >> /etc/portage/package.keywords
-echo 'app-emulation/virt-manager' >> /etc/portage/package.keywords
-echo 'app-emulation/libguestfs' >> /etc/portage/package.keywords
-echo 'app-emulation/libguestfs-appliance' >> /etc/portage/package.keywords
-echo 'sys-firmware/seabios' >> /etc/portage/package.keywords
-echo 'sys-apps/dtc' >> /etc/portage/package.keywords
-echo 'app-admin/augeas' >> /etc/portage/package.keywords
-echo 'dev-ml/ocaml-fileutils' >> /etc/portage/package.keywords
-echo 'dev-ml/ocaml-gettext' >> /etc/portage/package.keywords
-echo 'dev-ml/camomile' >> /etc/portage/package.keywords
-echo 'app-emulation/qemu gtk spice sasl tci tls usb xfs' >> /etc/portage/package.use
-echo 'app-emulation/spice client sasl' >> /etc/portage/package.use
-echo 'app-emulation/libvirt fuse lvm lxc pcap sasl virt-network' >> /etc/portage/package.use
-echo 'x11-libs/gtk+ introspection' >> /etc/portage/package.use
-echo 'x11-libs/gdk-pixbuf introspection' >> /etc/portage/package.use
-echo 'x11-libs/vte introspection'  >> /etc/portage/package.use
-echo 'app-emulation/libvirt-glib introspection' >> /etc/portage/package.use
-echo 'dev-libs/atk introspection' >> /etc/portage/package.use
-echo 'net-misc/spice-gtk introspection gtk3' >> /etc/portage/package.use
-echo 'sys-auth/polkit introspection' >> /etc/portage/package.use
-echo 'net-libs/gtk-vnc introspection gtk3' >> /etc/portage/package.use
-echo 'x11-libs/pango introspection' >> /etc/portage/package.use
-echo 'app-misc/hivex perl' >> /etc/portage/package.use
+echo 'net-libs/gtk-vnc python' >> /etc/portage/package.use/gtk-vnc
+echo 'net-misc/spice-gtk python usbredir' >> /etc/portage/package.use/spice-gtk
+echo 'app-emulation/libvirt-glib python' >> /etc/portage/package.use/libvirt-glib
+echo 'net-dns/dnsmasq script' >> /etc/portage/package.use/dnsmasq
+echo 'app-emulation/qemu usbredir virtfs xattr' >> /etc/portage/package.use/qemu
+echo 'app-emulation/libvirt pcap virt-network' >> /etc/portage/package.use/libvirt
 
-emerge libvirt virt-manager libguestfs
+emerge libvirt virt-manager 
 
-cp /media/data02/Linux/ConfigFiles/polkit/20-libvirt.rules /etc/polkit-1/rules.d
+cp /media/data00/Linux/Setups/ConfigFiles/polkit/20-libvirt.rules /etc/polkit-1/rules.d
 chmod 644 /etc/polkit-1/rules.d/20-libvirt.rules
 ```
 
