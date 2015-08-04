@@ -527,9 +527,17 @@ chmod 644 /etc/polkit-1/rules.d/20-libvirt.rules
 
 ### vlc
 ```sh
-echo 'media-video/vlc a52 aac bluray musepack matroska wma-fixed x264' >> /etc/portage/package.use
-echo 'media-libs/libbluray aacs' >> /etc/portage/package.use
-echo 'sys-libs/zlib minizip' >> /etc/portage/package.use
+echo 'media-video/vlc' >> /etc/portage/package.keywords/vlc
+echo 'dev-qt/qtx11extras' >> /etc/portage/package.keywords/qtx11extras
+echo 'dev-qt/qtcore' >> /etc/portage/package.keywords/qtcore     
+echo 'dev-qt/qtgui' >> /etc/portage/package.keywords/qtgui 
+echo 'dev-qt/qtdbus' >> /etc/portage/package.keywords/qtdbus
+echo 'dev-qt/qtwidgets' >> /etc/portage/package.keywords/qtwidgets
+echo 'sys-libs/zlib minizip' >> /etc/portage/package.use/zlib
+echo 'dev-libs/libpcre pcre16' >> /etc/portage/package.use/libpcre
+
+echo 'media-video/vlc -cdda -encode -gnome libass matroska modplug musepack qt5' >> /etc/portage/package.use/vlc
+
 emerge vlc
 ```
 
