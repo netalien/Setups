@@ -68,4 +68,5 @@ augroup json_autocmd
   autocmd FileType json set foldmethod=syntax
 augroup END
 
-
+" Netalien's settings
+set bs=2
