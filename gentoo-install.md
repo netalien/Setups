@@ -292,12 +292,29 @@ Name=eth0
 Bridge=bridge0
 _EOF
 
-systemctl enable systemd-networkd.service
-systemctl start systemd-networkd.service
+cat > /etc/systemd/system/bridge-stp-settings.service <<_EOF
+[Unit]
+Description=Sets stp settings on bridge
+After=systemd-networkd.service
+Requires=systemd-networkd.service
+
+[Service]
+Type=oneshot
+ExecStart=/sbin/brctl setfd bridge0 0
+ExecStart=/sbin/brctl sethello bridge0 1
+
+[Install]
+WantedBy=multi-user.target
+_EOF
+
+systemctl enable systemd-networkd
+systemctl start systemd-networkd
+systemctl enable bridge-stp-settings
+systemctl start bridge-stp-settings
 
 ln -snf /run/systemd/resolve/resolv.conf /etc/resolv.conf
-systemctl enable systemd-resolved.service
-systemctl start systemd-resolved.service
+systemctl enable systemd-resolved
+systemctl start systemd-resolved
 `
 
 ### Set hostname
