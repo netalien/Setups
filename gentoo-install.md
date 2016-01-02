@@ -383,7 +383,8 @@ echo 'gnome-extra/zenity -webkit' >> /etc/portage/package.use/zenity
 
 emerge -p xorg-x11 i3 i3status i3lock firefox-bin thunderbird-bin pgadmin3 \
 terminator google-chrome google-perftools colordiff gvim numlockx feh moc \
-scrot irssi tmux git subversion dmenu alsa-utils zenity mupdf libtxc_dxtn
+scrot irssi tmux git subversion dmenu alsa-utils zenity mupdf libtxc_dxtn \
+sysutils jq collectl 
 ```
 
 ### Extra config for i3
