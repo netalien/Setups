@@ -96,12 +96,12 @@ _EOF
 
 ### Install important packages
 ```sh
-apt-get install vim vim-addon-manager vim-syntastic vim-gnome vim-scripts wajig debtags ctags vim-doc cscope exuberant-ctags reportbug apt-move apt-file deborphan apt-show-versions debsums debconf-utils resolvconf
+apt-get install vim vim-addon-manager vim-syntastic vim-gnome vim-scripts wajig debtags ctags vim-doc cscope exuberant-ctags reportbug apt-move apt-file deborphan apt-show-versions debsums debconf-utils resolvconf ctags dpkg-repack alien
 ```
 
 ### Install extra packages
 ```sh
-wajig install vim-syntax-docker vim-syntax-go htop iotop sysstat nethogs iptraf-ng wireshark nmap mtr bind9utils remmina remmina-plugin-vnc remmina-plugin-rdp terminator pgadmin3 tcpdump p7zip-full p7zip-rar fio git subversion ffmpegthumbnailer kffmpegthumbnailer thunderbird pavucontrol
+wajig install vim-syntax-docker htop iotop sysstat nethogs iptraf-ng wireshark nmap mtr bind9utils remmina remmina-plugin-vnc remmina-plugin-rdp terminator pgadmin3 tcpdump p7zip-full p7zip-rar fio git subversion ffmpegthumbnailer kffmpegthumbnailer thunderbird pavucontrol
 ```
 
 ### libvirt and friends
@@ -116,7 +116,7 @@ wajig install vlc moc moc-ffmpeg-plugin
 
 ### nested kvm
 ```sh
-echo 'options kvm-intel nested=1' > /etc/modprobe.d/99-intel-nestedvirt.conf
+sudo sh -c "echo 'options amd nested=1' > /etc/modprobe.d/amd-nestedvirt.conf"
 ```
 
 ### vim modifications
