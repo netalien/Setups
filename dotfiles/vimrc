@@ -1,72 +1,194 @@
-call plug#begin('/home/netalien/.vim/plugged')
+" Use Vim settings, rather than Vi settings (much better!).
+" This must be first, because it changes other options as a side effect.
+set nocompatible
 
-" http://vimawesome.com/plugin/syntastic
-Plug 'scrooloose/syntastic'
+" Allow backspacing over everything in insert mode.
+set backspace=indent,eol,start
 
-" http://vimawesome.com/plugin/vim-airline-sad-beautiful-tragic
-Plug 'bling/vim-airline'
+set history=200		" keep 200 lines of command line history
+set ruler		" show the cursor position all the time
+set showcmd		" display incomplete commands
+set wildmenu		" display completion matches in a status line
+" set autoindent smartindent	" turn on auto/smart indenting
+set expandtab		" use spaces, no tabs
+set smarttab		" make <space> and <tab> smarter
+set tabstop=4		" tabstop
+set shiftwidth=4	" indents 4
+set showmatch       " Show matching parents/brackets
+set nohlsearch      " Disable search hilingthing
+set undolevels=50	" a lot -go back- possibilities
+set ttimeout		" time out for key codes
+set ttimeoutlen=100	" wait up to 100ms after Esc for special key
 
-" http://vimawesome.com/plugin/vim-colors-solarized-sparks-fly
-Plug 'altercation/vim-colors-solarized'
+" Show @@@ in the last line if it is truncated.
+set display=truncate
 
-" http://vimawesome.com/plugin/vim-go-all-too-well
-Plug 'fatih/vim-go', { 'for': 'go'}
+" Show a few lines of context around the cursor.  Note that this makes the
+" text scroll if you mouse-click near the start or end of the window.
+set scrolloff=5
 
-" http://vimawesome.com/plugin/json-vim
-Plug 'elzr/vim-json'
+" Do incremental searching when it's possible to timeout.
+if has('reltime')
+  set incsearch
+endif
 
-" http://vimawesome.com/plugin/fugitive-vim
-Plug 'tpope/vim-fugitive'
+" Do not recognize octal numbers for Ctrl-A and Ctrl-X, most users find it
+" confusing.
+set nrformats-=octal
 
-" http://vimawesome.com/plugin/ctrlp-vim-state-of-grace
-Plug 'kien/ctrlp.vim'
+" In many terminal emulators the mouse works just fine.  By enabling it you
+" can position the cursor, Visually select and scroll with the mouse.
+if has('mouse')
+  set mouse=a
+endif
 
-" http://vimawesome.com/plugin/gundo
-Plug 'sjl/gundo.vim'
+" Switch syntax highlighting on when the terminal has colors or when using the
+" GUI (which always has colors).
+if &t_Co > 2 || has("gui_running")
+  " Revert with ":syntax off".
+  syntax on
 
-" http://vimawesome.com/plugin/ag-vim
-Plug 'rking/ag.vim'
+  " I like highlighting strings inside C comments.
+  " Revert with ":unlet c_comment_strings".
+  let c_comment_strings=1
 
-" http://vimawesome.com/plugin/surround-vim
-Plug 'tpope/vim-surround'
+  " Colorscheme settings
+  " Need to force console colors supported on things like terminator...
+  set t_Co=256
+  " Set theme
+  set background=light
+  colorscheme primary
+endif
 
-call plug#end()
+" Only do this part when compiled with support for autocommands.
+if has("autocmd")
 
-" Syntastic settings
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
+  " Enable file type detection.
+  " Use the default filetype settings, so that mail gets 'tw' set to 72,
+  " 'cindent' is on in C files, etc.
+  " Also load indent files, to automatically do language-dependent indenting.
+  " Revert with ":filetype off".
+  filetype plugin indent on
 
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
+  " Put these in an autocmd group, so that you can revert them with:
+  " ":augroup vimStartup | au! | augroup END"
+  augroup vimStartup
+    au!
 
-" Airline settings
-let g:airline#extensions#tabline#enabled = 1
-let g:airline_powerline_fonts = 1
-set laststatus=2
+    " When editing a file, always jump to the last known cursor position.
+    " Don't do it when the position is invalid or when inside an event handler
+    " (happens when dropping a file on gvim).
+    autocmd BufReadPost *
+      \ if line("'\"") >= 1 && line("'\"") <= line("$") |
+      \   exe "normal! g`\"" |
+      \ endif
 
-" Solarized settings
-syntax enable
-set background=dark
-colorscheme solarized
+  augroup END
 
-" Gundo settings
-nnoremap <F5> :GundoToggle<CR>
+endif " has("autocmd")
 
-" vim-json settings
-au! BufRead,BufNewFile *.json set filetype=json
+" Convenient command to see the difference between the current buffer and the
+" file it was loaded from, thus the changes you made.
+" Only define it when not defined already.
+" Revert with: ":delcommand DiffOrig".
+if !exists(":DiffOrig")
+  command DiffOrig vert new | set bt=nofile | r ++edit # | 0d_ | diffthis
+		  \ | wincmd p | diffthis
+endif
 
-augroup json_autocmd
-  autocmd!
-  autocmd FileType json set autoindent
-  autocmd FileType json set formatoptions=tcq2l
-  autocmd FileType json set textwidth=78 shiftwidth=2
-  autocmd FileType json set softtabstop=2 tabstop=8
-  autocmd FileType json set expandtab
-  autocmd FileType json set foldmethod=syntax
-augroup END
+if has('langmap') && exists('+langremap')
+  " Prevent that the langmap option applies to characters that result from a
+  " mapping.  If set (default), this may break plugins (but it's backward
+  " compatible).
+  set nolangremap
+endif
 
-" Netalien's settings
-set bs=2
+" CTRL-X and SHIFT-Del are Cut
+vnoremap <C-X> "+x
+vnoremap <S-Del> "+x
+
+" CTRL-C and CTRL-Insert are Copy
+vnoremap <C-C> "+y
+vnoremap <C-Insert> "+y
+
+" CTRL-V and SHIFT-Insert are Paste
+map <C-V>		"+gP
+map <S-Insert>		"+gP
+
+cmap <C-V>		<C-R>+
+cmap <S-Insert>		<C-R>+
+
+" Pasting blockwise and linewise selections is not possible in Insert and
+" Visual mode without the +virtualedit feature.  They are pasted as if they
+" were characterwise instead.
+" Uses the paste.vim autoload script.
+" Use CTRL-G u to have CTRL-Z only undo the paste.
+
+exe 'inoremap <script> <C-V> <C-G>u' . paste#paste_cmd['i']
+exe 'vnoremap <script> <C-V> ' . paste#paste_cmd['v']
+
+imap <S-Insert>		<C-V>
+vmap <S-Insert>		<C-V>
+
+" Use CTRL-Q to do what CTRL-V used to do
+noremap <C-Q>		<C-V>
+
+" Use CTRL-S for saving, also in Insert mode
+noremap <C-S>		:update<CR>
+vnoremap <C-S>		<C-C>:update<CR>
+inoremap <C-S>		<C-O>:update<CR>
+
+" For CTRL-V to work autoselect must be off.
+" On Unix we have two selections, autoselect can be used.
+if !has("unix")
+  set guioptions-=a
+endif
+
+" CTRL-Z is Undo; not in cmdline though
+noremap <C-Z> u
+inoremap <C-Z> <C-O>u
+
+" CTRL-Y is Redo (although not repeat); not in cmdline though
+noremap <C-Y> <C-R>
+inoremap <C-Y> <C-O><C-R>
+
+" Alt-Space is System menu
+if has("gui")
+  noremap <M-Space> :simalt ~<CR>
+  inoremap <M-Space> <C-O>:simalt ~<CR>
+  cnoremap <M-Space> <C-C>:simalt ~<CR>
+endif
+
+" CTRL-A is Select all
+noremap <C-A> gggH<C-O>G
+inoremap <C-A> <C-O>gg<C-O>gH<C-O>G
+cnoremap <C-A> <C-C>gggH<C-O>G
+onoremap <C-A> <C-C>gggH<C-O>G
+snoremap <C-A> <C-C>gggH<C-O>G
+xnoremap <C-A> <C-C>ggVG
+
+" CTRL-Tab is Next window
+noremap <C-Tab> <C-W>w
+inoremap <C-Tab> <C-O><C-W>w
+cnoremap <C-Tab> <C-C><C-W>w
+onoremap <C-Tab> <C-C><C-W>w
+
+" CTRL-F4 is Close window
+noremap <C-F4> <C-W>c
+inoremap <C-F4> <C-O><C-W>c
+cnoremap <C-F4> <C-C><C-W>c
+onoremap <C-F4> <C-C><C-W>c
+
+set autoindent		" always set autoindenting on
+set nobackup		" Forget backups
+set noswapfile		" Forget temporary files
+
+" Add optional packages.
+"
+" The matchit plugin makes the % command work better, but it is not backwards
+" compatible.
+if has('syntax') && has('eval')
+  packadd matchit
+endif
+
+" vim: set sw=2 :
